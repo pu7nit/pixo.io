@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompressYourPics – Free Online Image Compressor</title>
+    <meta name="description" content="Compress JPEG, PNG, and WebP images instantly with Pixo.io. No quality loss, no uploads. Fast, private, and free.">
+    <meta property="og:title" content="Pixo.io – Free Online Image Compressor">
+    <meta property="og:description" content="Compress JPEG, PNG, and WebP images instantly with Pixo.io. No quality loss, no uploads. Fast, private, and free.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pixo.io">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .drag-area {
+            border: 2px dashed #d1d5db;
+            transition: all 0.3s ease;
+        }
+        .drag-area.active {
+            border-color: #4A90E2;
+            background-color: #f8fafc;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-gray-800">CompressYour<span class="text-blue-500">Pics</span></a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#how-it-works" class="text-gray-600 hover:text-blue-500 transition">How it Works</a>
+                <a href="#features" class="text-gray-600 hover:text-blue-500 transition">Features</a>
+                <a href="#faq" class="text-gray-600 hover:text-blue-500 transition">FAQ</a>
+                <a href="#contact" class="text-gray-600 hover:text-blue-500 transition">Contact</a>
+            </nav>
+            <button class="md:hidden text-gray-600 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="py-20 px-4 text-center">
+        <div class="max-w-4xl mx-auto fade-in">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">Compress Your Images Instantly — No Quality Lost</h1>
+            <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">Drag & drop or upload your JPEG, PNG, or WebP files. Simple, free, and lightning fast.</p>
+            
+            <div id="drop-area" class="drag-area rounded-xl p-8 mb-6 cursor-pointer mx-auto max-w-2xl transition-all duration-300 text-center">
+                <div id="drop-content" class="flex flex-col items-center justify-center space-y-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p class="text-gray-600">Drag & drop your images here</p>
+                    <span class="text-gray-400 text-sm">or</span>
+                    <button onclick="document.getElementById('fileInput').click()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition">Upload Image</button>
+                    <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" class="hidden" multiple>
+                </div>
+
+                <div id="preview" class="mt-6 hidden">
+                    <p class="text-gray-600 mb-4">Preview:</p>
+                    <div id="imagePreview" class="flex flex-wrap justify-center gap-4"></div>
+                    <div class="mt-4">
+                        <label for="quality" class="text-gray-600">Compression Quality (0-100): </label>
+                        <input type="range" id="quality" min="0" max="100" value="80" class="w-48">
+                    </div>
+                    <button id="compressBtn" class="mt-6 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition" disabled>Compress Image</button>
+                    <p id="statusText" class="text-gray-500 text-sm mt-2"></p>
+                </div>
+            </div>
+            
+            <p class="text-gray-400 text-sm">All images are processed in your browser. Nothing is uploaded.</p>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-16 fade-in">How It Works</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div class="bg-white p-6 rounded-xl shadow-sm fade-in" style="transition-delay: 0.1s">
+                    <div class="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2 text-center">1. Upload Your Image</h3>
+                    <p class="text-gray-600 text-center">Simply drag & drop or click to upload your image files from any device.</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-sm fade-in" style="transition-delay: 0.2s">
+                    <div class="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2 text-center">2. We Compress It</h3>
+                    <p class="text-gray-600 text-center">Our smart algorithms optimize your images while preserving visual quality.</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-sm fade-in" style="transition-delay: 0.3s">
+                    <div class="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2 text-center">3. Download</h3>
+                    <p class="text-gray-600 text-center">Get your optimized files instantly without any waiting time.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-16 fade-in">Features</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div class="feature-card bg-white p-6 rounded-xl shadow-sm transition duration-300 fade-in hover:shadow-md">
+                    <div class="flex items-start">
+                        <div class="bg-blue-50 p-3 rounded-lg mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Real-time Compression</h3>
+                            <p class="text-gray-600">See your optimized images instantly as you adjust compression settings.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature-card bg-white p-6 rounded-xl shadow-sm transition duration-300 fade-in hover:shadow-md">
+                    <div class="flex items-start">
+                        <div class="bg-blue-50 p-3 rounded-lg mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Multiple Formats</h3>
+                            <p class="text-gray-600">Supports JPEG, PNG, and WebP formats for all your image needs.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature-card bg-white p-6 rounded-xl shadow-sm transition duration-300 fade-in hover:shadow-md">
+                    <div class="flex items-start">
+                        <div class="bg-blue-50 p-3 rounded-lg mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Super Fast</h3>
+                            <p class="text-gray-600">Optimized algorithms deliver results in milliseconds, not minutes.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature-card bg-white p-6 rounded-xl shadow-sm transition duration-300 fade-in hover:shadow-md">
+                    <div class="flex items-start">
+                        <div class="bg-blue-50 p-3 rounded-lg mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">100% Private</h3>
+                            <p class="text-gray-600">All processing happens in your browser - your images never leave your device.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature-card bg-white p-6 rounded-xl shadow-sm transition duration-300 fade-in hover:shadow-md">
+                    <div class="flex items-start">
+                        <div class="bg-blue-50 p-3 rounded-lg mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Cross-Device</h3>
+                            <p class="text-gray-600">Works perfectly on desktops, tablets, and mobile phones.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature-card bg-white p-6 rounded-xl shadow-sm transition duration-300 fade-in hover:shadow-md">
+                    <div class="flex items-start">
+                        <div class="bg-blue-50 p-3 rounded-lg mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M5 17v4M3 19h4M17 3v4M15 5h4M17 17v4M15 19h4" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Quality Control</h3>
+                            <p class="text-gray-600">Adjust compression levels to find the perfect balance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-16 fade-in">Frequently Asked Questions</h2>
+            
+            <div class="max-w-3xl mx-auto space-y-4">
+                <div class="bg-white p-6 rounded-xl shadow-sm fade-in">
+                    <div class="flex justify-between items-center cursor-pointer">
+                        <h3 class="text-xl font-semibold">Is this free to use?</h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="mt-4 text-gray-600">
+                        Yes, CompressYourPics is completely free to use with no limits or watermarks. We believe in providing quality tools without paywalls.
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-sm fade-in" style="transition-delay: 0.1s">
+                    <div class="flex justify-between items-center cursor-pointer">
+                        <h3 class="text-xl font-semibold">Are my images stored anywhere?</h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="mt-4 text-gray-600">
+                        No, all processing happens directly in your browser. Your images are never uploaded to any server - they stay completely private on your device.
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-sm fade-in" style="transition-delay: 0.2s">
+                    <div class="flex justify-between items-center cursor-pointer">
+                        <h3 class="text-xl font-semibold">Does compression reduce image quality?</h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="mt-4 text-gray-600">
+                        Our smart algorithms carefully optimize images to minimize file size while preserving visual quality. For most images, you won't notice any difference!
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-sm fade-in" style="transition-delay: 0.3s">
+                    <div class="flex justify-between items-center cursor-pointer">
+                        <h3 class="text-xl font-semibold">What image formats are supported?</h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="mt-4 text-gray-600">
+                        CompressYourPics supports JPEG, PNG, and WebP formats. We're continuously adding support for more formats based on user feedback.
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-sm fade-in" style="transition-delay: 0.4s">
+                    <div class="flex justify-between items-center cursor-pointer">
+                        <h3 class="text-xl font-semibold">Is there a file size limit?</h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="mt-4 text-gray-600">
+                        There's no artificial limit, but very large files may take longer to process depending on your device's capabilities.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 text-center">
+        <div class="max-w-4xl mx-auto bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-12 fade-in">
+            <h2 class="text-3xl font-bold text-white mb-6">Ready to compress your images?</h2>
+            <p class="text-blue-100 mb-8 max-w-2xl mx-auto">Join thousands of users who trust CompressYourPics for fast, private image optimization.</p>
+            <button onclick="document.getElementById('fileInput').click()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition">Upload Image Now</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-800 text-gray-300 py-12 px-4">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">CompressYour<span class="text-blue-400">Pics</span></h3>
+                    <p class="mb-6">The easiest way to shrink your image files without losing quality.</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-12 pt-8 text-center">
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Observe elements for fade-in animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(element => {
+            observer.observe(element);
+        });
+
+        // Drag and drop functionality
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('fileInput');
+        const previewContainer = document.getElementById('imagePreview');
+        const compressBtn = document.getElementById('compressBtn');
+        const qualityInput = document.getElementById('quality');
+        const statusText = document.getElementById('statusText');
+        let selectedFiles = [];
+        let compressionCount = {}; // Track compression iterations per file
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.add('active'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.remove('active'), false);
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            handleFiles(files);
+            fileInput.value = ''; // Clear input for re-upload
+        });
+
+        function handleFiles(files) {
+            const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            selectedFiles = Array.from(files).filter(file => validTypes.includes(file.type));
+
+            // Reset preview and status
+            previewContainer.innerHTML = '';
+            statusText.textContent = '';
+            document.getElementById('preview').classList.add('hidden');
+            compressBtn.disabled = true;
+
+            if (selectedFiles.length === 0) {
+                statusText.textContent = 'No valid images selected (JPEG, PNG, WebP only).';
+                return;
+            }
+
+            document.getElementById('preview').classList.remove('hidden');
+            selectedFiles.forEach((file, index) => {
+                // Initialize compression count for new files
+                if (!compressionCount[file.name]) {
+                    compressionCount[file.name] = file.name.includes('compressed-') ? 1 : 0;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    if (e.target.error) {
+                        statusText.textContent = `Error loading ${file.name}.`;
+                        return;
+                    }
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = `Preview of ${file.name}`;
+                    img.className = 'max-h-64 rounded-lg shadow';
+                    img.dataset.index = index;
+                    previewContainer.appendChild(img);
+                };
+                reader.onerror = () => {
+                    statusText.textContent = `Error loading ${file.name}.`;
+                };
+                reader.readAsDataURL(file);
+            });
+            compressBtn.disabled = false;
+            statusText.textContent = `${selectedFiles.length} image(s) ready for compression. For already compressed images, adjust the quality slider lower for further reduction.`;
+        }
+
+        compressBtn.addEventListener('click', async () => {
+            if (selectedFiles.length === 0) return;
+            compressBtn.disabled = true;
+            statusText.textContent = 'Compressing...';
+
+            try {
+                for (const file of selectedFiles) {
+                    // Check file size to warn about potential over-compression
+                    const fileSizeMB = file.size / (1024 * 1024);
+                    if (fileSizeMB < 0.1) {
+                        statusText.textContent = `Warning: ${file.name} is already very small. Further compression may reduce quality significantly.`;
+                    }
+
+                    // Increment compression count for the file
+                    compressionCount[file.name] = (compressionCount[file.name] || 0) + 1;
+
+                    // Adjust compression options for re-compression
+                    const isRecompressed = file.name.includes('compressed-');
+                    const options = {
+                        maxSizeMB: isRecompressed ? 0.5 : 1.5, // More aggressive for recompression
+                        maxWidthOrHeight: 1920,
+                        useWebWorker: true,
+                        initialQuality: Math.max(0.05, qualityInput.value / 100) // Allow lower quality for recompression
+                    };
+                    const compressedFile = await imageCompression(file, options);
+                    const downloadUrl = URL.createObjectURL(compressedFile);
+                    const link = document.createElement('a');
+                    // Append compression count to filename
+                    const fileNameParts = file.name.split('.');
+                    const extension = fileNameParts.pop();
+                    const baseName = fileNameParts.join('.');
+                    link.href = downloadUrl;
+                    link.download = `compressed-${compressionCount[file.name]}-${baseName}.${extension}`;
+                    link.click();
+                    URL.revokeObjectURL(downloadUrl);
+                }
+                statusText.textContent = 'Compression complete. Your downloads have started. For further compression, lower the quality slider and re-upload.';
+                selectedFiles = [];
+                previewContainer.innerHTML = '';
+                document.getElementById('preview').classList.add('hidden');
+                compressBtn.disabled = true;
+            } catch (error) {
+                console.error(error);
+                statusText.textContent = 'Compression failed. Please try again.';
+            } finally {
+                compressBtn.disabled = selectedFiles.length === 0;
+            }
+        });
+
+        // FAQ accordion functionality
+        document.querySelectorAll('#faq div').forEach(faqItem => {
+            const header = faqItem.querySelector('div:first-child');
+            const content = faqItem.querySelector('div:last-child');
+            const icon = faqItem.querySelector('svg');
+            
+            header.addEventListener('click', () => {
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+
+        // Mobile menu toggle
+        document.querySelector('button.md\\:hidden').addEventListener('click', function() {
+            const nav = document.querySelector('nav.hidden');
+            nav.classList.toggle('hidden');
+            nav.classList.toggle('flex');
+            nav.classList.toggle('absolute');
+            nav.classList.toggle('top-16');
+            nav.classList.toggle('right-4');
+            nav.classList.toggle('bg-white');
+            nav.classList.toggle('p-4');
+            nav.classList.toggle('rounded-lg');
+            nav.classList.toggle('shadow-lg');
+            nav.classList.toggle('flex-col');
+            nav.classList.toggle('space-y-4');
+        });
+    </script>
+</body>
+</html>
